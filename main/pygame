@@ -21,14 +21,12 @@ RELOGIO = pygame.time.Clock()
 caminho_imagens = "imagens"
 nomes_imagens = [
     
-      os.path.join(caminho_imagens, "internacional.png"),
-    os.path.join(caminho_imagens, "fluminense.png"),
-    os.path.join(caminho_imagens, "flamengo.png"),
-    os.path.join(caminho_imagens, "sao_paulo.png"), # Atenção ao nome do arquivo
-    os.path.join(caminho_imagens, "corinthians.png"),
-    os.path.join(caminho_imagens, "palmeiras.png"),
-]
-VERSO_CARTA = pygame.image.load(os.path.join(caminho_imagens, "brasileirao.png"))
+      os.path.join(caminho_imagens, "imagem1.png"),
+    os.path.join(caminho_imagens, "imagem2.png"),
+    os.path.join(caminho_imagens, "imagem3.png"),
+    os.path.join(caminho_imagens, "imagem4.png"), # Atenção ao nome do arquivo
+    os.path.join(caminho_imagens, "imagem5.png"),
+    os.path.join(caminho_imagens, "imagem6.png"),
 ]
 VERSO_CARTA = pygame.image.load(os.path.join(caminho_imagens, "verso.png"))
 
