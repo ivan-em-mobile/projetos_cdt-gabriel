@@ -1,4 +1,9 @@
-# jogo.py
+'''
+jogo_memoria_imagens_otimizadas.py
+foi feito o ajuste das imagens 
+para percorrer os objetos
+
+'''
 
 import pygame
 import random
@@ -20,14 +25,23 @@ RELOGIO = pygame.time.Clock()
 # Carregar imagens das cartas
 caminho_imagens = "imagens"
 nomes_imagens = [
-    os.path.join(caminho_imagens, "imagem1.png"),
-    os.path.join(caminho_imagens, "imagem2.png"),
-    os.path.join(caminho_imagens, "imagem3.png"),
-    os.path.join(caminho_imagens, "imagem4.png"),
-    os.path.join(caminho_imagens, "imagem5.png"),
-    os.path.join(caminho_imagens, "imagem6.png"),
+    # os.path.join(caminho_imagens, "imagem1.png"),
+    # os.path.join(caminho_imagens, "imagem2.png"),
+    # os.path.join(caminho_imagens, "imagem3.png"),
+    # os.path.join(caminho_imagens, "imagem4.png"),
+    # os.path.join(caminho_imagens, "imagem5.png"),
+    # os.path.join(caminho_imagens, "imagem6.png"),
+
+    os.path.join("imagem1.png"),
+    os.path.join("imagem2.png"),
+    os.path.join("imagem3.png"),
+    os.path.join("imagem4.png"),
+    os.path.join("imagem5.png"),
+    os.path.join("imagem6.png"),
+
 ]
-VERSO_CARTA = pygame.image.load(os.path.join(caminho_imagens, "verso.png"))
+VERSO_CARTA = pygame.image.load(os.path.join("verso.png"))
+# VERSO_CARTA = pygame.image.load(os.path.join(caminho_imagens, "verso.png"))
 
 # Redimensionar imagens para o tamanho das cartas
 TAMANHO_CARTA = (100, 100)

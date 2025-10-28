@@ -197,4 +197,4 @@ if __name__ == "__main__":
     criar_cartas_tkinter(root)
     
     # Inicia o loop principal do Tkinter (similar ao game_loop)
-    root.mainloop()d
+    root.mainloop()
