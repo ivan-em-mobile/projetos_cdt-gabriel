@@ -11,7 +11,7 @@ import random
 import time
 import os
 
-# --- Configurações Iniciais ---
+# Configurações Iniciais
 pygame.init()
 
 # Dimensões da tela e cores
@@ -44,11 +44,10 @@ try:
     VERSO_CARTA_IMG = pygame.transform.scale(VERSO_CARTA_IMG, TAMANHO_CARTA)
 except pygame.error as e:
     print(f"ERRO: Não foi possível carregar o verso da carta: {e}")
-    # Nota: A mensagem original já foi ajustada para lidar com este erro.
-    # Neste ponto, assumimos que as imagens foram carregadas.
+
     exit()
 
-# --- 1. Carregamento de Imagens com IDs ---
+#Carregamento de Imagens com IDs
 dados_imagens = []
 for nome_arquivo in NOMES_IMAGENS:
     img_path = os.path.join(nome_arquivo)
@@ -63,7 +62,7 @@ todas_imagens_com_id = dados_imagens * 2
 random.shuffle(todas_imagens_com_id)
 
 
-# --- 2. Classe Carta (Sem alterações necessárias aqui) ---
+# Classe Carta 
 class Carta:
     def __init__(self, imagem_e_id, x, y):
         self.imagem_frente = imagem_e_id[0]
@@ -80,7 +79,7 @@ class Carta:
             janela.blit(self.imagem_verso, self.rect)
 
 
-# --- 3. Funções Auxiliares ---
+# Funções Auxiliares
 
 def criar_cartas():
     """Cria e organiza as cartas na tela com layout centralizado e espaço para placar."""
@@ -125,7 +124,7 @@ def desenhar_texto(texto, tamanho, cor, x, y):
     retangulo_texto = superficie_texto.get_rect(center=(x, y))
     JANELA.blit(superficie_texto, retangulo_texto)
 
-# --- 4. Loop Principal do Jogo ---
+# Loop Principal do Jogo
 
 def game_loop():
     cartas = criar_cartas()
@@ -175,14 +174,14 @@ def game_loop():
             time.sleep(3)
             jogo_rodando = False
 
-        # --- Área de Desenho ---
+        # Área de Desenho
         JANELA.fill(COR_FUNDO)
         
-        # 1. Desenhar Cartas
+        # Desenhar Cartas
         for carta in cartas:
             carta.desenhar(JANELA) 
         
-        # 2. Desenhar o Placar (Contador na parte de cima)
+        # Desenhar o Placar (Contador na parte de cima)
         
         # Desenha um retângulo de fundo para o placar (opcional, mas ajuda a destacar)
         pygame.draw.rect(JANELA, (10, 10, 10), (0, 0, LARGURA, ALTURA_PLACAR)) # Retângulo preto no topo
