@@ -1,17 +1,29 @@
-'''
-jogo_memoria_layout.py
-nesta estrutura teremos uma melhor 
-visualização do projeto com 
-os objetos centralizados
-
-'''
+# game_flip_card.py (Código Final Otimizado)
 
 import pygame
 import random
 import time
 import os
+import sys # Importado para a correção do PyInstaller
 
-# Configurações Iniciais
+# --- FUNÇÃO PARA CORRIGIR CAMINHOS NO PYINSTALLER ---
+
+def resolver_caminho_recurso(caminho_relativo):
+    """
+    Obtém o caminho absoluto para um recurso (imagens, fontes), 
+    tratando do ambiente PyInstaller.
+    """
+    try:
+        # Se o programa estiver empacotado (frozen) pelo PyInstaller
+        # sys._MEIPASS aponta para o diretório temporário dos recursos
+        base_path = sys._MEIPASS
+    except AttributeError:
+        # Se estiver a rodar como um script Python normal
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, caminho_relativo)
+
+# --- Configurações Iniciais ---
 pygame.init()
 
 # Dimensões da tela e cores
@@ -23,34 +35,33 @@ JANELA = pygame.display.set_mode((LARGURA, ALTURA))
 pygame.display.set_caption("Jogo da Memória Pygame")
 RELOGIO = pygame.time.Clock()
 
-# Carregar imagens das cartas
-caminho_imagens = "imagens"
+# Configuração das Imagens
+caminho_imagens = "imagens" # Nome da subpasta que contém as imagens
 NOMES_IMAGENS = [
     "imagem1.png", "imagem2.png", "imagem3.png", 
     "imagem4.png", "imagem5.png", "imagem6.png",
 ]
 VERSO_NOME = "verso.png"
 
-# Tamanho das Cartas
+# Tamanho das Cartas e Layout
 TAMANHO_CARTA = (100, 100)
-
-# Espaço reservado no topo para o placar
 ALTURA_PLACAR = 50 
-AREA_JOGO_Y = ALTURA_PLACAR # Posição inicial Y da área das cartas
+AREA_JOGO_Y = ALTURA_PLACAR 
 
-# Carrega o verso da carta uma única vez
+# --- Carrega o verso da carta uma única vez ---
+caminho_verso = resolver_caminho_recurso(os.path.join(caminho_imagens, VERSO_NOME))
 try:
-    VERSO_CARTA_IMG = pygame.image.load(os.path.join(VERSO_NOME))
+    VERSO_CARTA_IMG = pygame.image.load(caminho_verso)
     VERSO_CARTA_IMG = pygame.transform.scale(VERSO_CARTA_IMG, TAMANHO_CARTA)
 except pygame.error as e:
     print(f"ERRO: Não foi possível carregar o verso da carta: {e}")
-
     exit()
 
-#Carregamento de Imagens com IDs
+# --- 1. Carregamento de Imagens com IDs ---
 dados_imagens = []
 for nome_arquivo in NOMES_IMAGENS:
-    img_path = os.path.join(nome_arquivo)
+    # Usa a função resolver_caminho_recurso
+    img_path = resolver_caminho_recurso(os.path.join(caminho_imagens, nome_arquivo))
     try:
         imagem_surface = pygame.image.load(img_path)
         imagem_surface = pygame.transform.scale(imagem_surface, TAMANHO_CARTA)
@@ -62,7 +73,7 @@ todas_imagens_com_id = dados_imagens * 2
 random.shuffle(todas_imagens_com_id)
 
 
-# Classe Carta 
+# --- 2. Classe para representar cada carta ---
 class Carta:
     def __init__(self, imagem_e_id, x, y):
         self.imagem_frente = imagem_e_id[0]
@@ -73,27 +84,26 @@ class Carta:
         self.encontrada = False
 
     def desenhar(self, janela):
+        """Desenha a carta na tela, mostrando a frente ou o verso."""
         if self.virada:
             janela.blit(self.imagem_frente, self.rect)
         elif not self.encontrada:
             janela.blit(self.imagem_verso, self.rect)
 
 
-# Funções Auxiliares
+# --- 3. Funções Auxiliares ---
 
 def criar_cartas():
     """Cria e organiza as cartas na tela com layout centralizado e espaço para placar."""
     cartas = []
     
     # Parâmetros de Layout
-    cartas_por_linha = 4 # Ex: 4 cartas por linha (total de 12 cartas, 3 linhas)
-    espacamento = 15     # Espaço entre as cartas
+    cartas_por_linha = 4 
+    espacamento = 15     
     num_colunas = cartas_por_linha
     
-    # Calcular a largura total usada pelas cartas e espaçamentos
+    # Calcular a largura total usada e a margem para centralizar
     largura_usada = num_colunas * TAMANHO_CARTA[0] + (num_colunas - 1) * espacamento
-    
-    # Calcular a margem inicial para centralizar horizontalmente
     margem_x_inicial = (LARGURA - largura_usada) // 2
     
     # A margem Y é ajustada para começar abaixo da área do placar
@@ -103,10 +113,10 @@ def criar_cartas():
         linha = i // cartas_por_linha
         coluna = i % cartas_por_linha
         
-        # Posição X: Margem inicial + (coluna * (tamanho da carta + espaçamento))
+        # Posição X
         x = margem_x_inicial + coluna * (TAMANHO_CARTA[0] + espacamento)
         
-        # Posição Y: Margem inicial + (linha * (tamanho da carta + espaçamento))
+        # Posição Y
         y = margem_y_inicial + linha * (TAMANHO_CARTA[1] + espacamento)
         
         cartas.append(Carta(img_e_id, x, y))
@@ -114,17 +124,33 @@ def criar_cartas():
     return cartas
 
 def desenhar_texto(texto, tamanho, cor, x, y):
-    """Função para desenhar texto na tela."""
+    """
+    Função para desenhar texto na tela, com tratamento para PyInstaller.
+    Garante que uma fonte seja carregada mesmo que a fonte padrão falhe no executável.
+    """
+    caminho_fonte = None
+    
     try:
-        fonte = pygame.font.Font(None, tamanho)
+        # Tenta usar a fonte padrão (None) primeiro. Pode falhar no .exe.
+        fonte = pygame.font.Font(None, tamanho) 
     except Exception:
-        fonte = pygame.font.SysFont("Arial", tamanho)
-        
+         # Se a fonte padrão falhar no .exe, tenta carregar a 'freesansbold.ttf'
+         # que é geralmente empacotada com o Pygame.
+        try:
+            # Resolve o caminho para 'freesansbold.ttf' dentro do ambiente PyInstaller
+            caminho_relativo_fonte = os.path.join(pygame.base.get_data_path(), 'freesansbold.ttf')
+            caminho_fonte = resolver_caminho_recurso(caminho_relativo_fonte)
+            fonte = pygame.font.Font(caminho_fonte, tamanho)
+        except Exception:
+            # Último recurso: tenta uma fonte do sistema, se tudo o resto falhar
+            fonte = pygame.font.SysFont("Arial", tamanho)
+            
     superficie_texto = fonte.render(texto, True, cor)
     retangulo_texto = superficie_texto.get_rect(center=(x, y))
     JANELA.blit(superficie_texto, retangulo_texto)
 
-# Loop Principal do Jogo
+
+# --- 4. Loop Principal do Jogo ---
 
 def game_loop():
     cartas = criar_cartas()
@@ -174,19 +200,16 @@ def game_loop():
             time.sleep(3)
             jogo_rodando = False
 
-        # Área de Desenho
+        # --- Área de Desenho ---
         JANELA.fill(COR_FUNDO)
         
-        # Desenhar Cartas
+        # 1. Desenhar Cartas
         for carta in cartas:
             carta.desenhar(JANELA) 
         
-        # Desenhar o Placar (Contador na parte de cima)
+        # 2. Desenhar o Placar (Contador na parte de cima)
+        pygame.draw.rect(JANELA, (10, 10, 10), (0, 0, LARGURA, ALTURA_PLACAR)) # Retângulo de fundo
         
-        # Desenha um retângulo de fundo para o placar (opcional, mas ajuda a destacar)
-        pygame.draw.rect(JANELA, (10, 10, 10), (0, 0, LARGURA, ALTURA_PLACAR)) # Retângulo preto no topo
-        
-        # Desenha o texto do Placar (Centralizado verticalmente na área do placar)
         placar_x = LARGURA // 2
         placar_y = ALTURA_PLACAR // 2
         desenhar_texto(f"Pontuação: {pontos}", 30, COR_TEXTO, placar_x, placar_y)
